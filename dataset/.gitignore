@@ -1,0 +1,8 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+/0_submission_data_1546300800_1577836800.csv
+/1_submission_data_1546300800_1577836800.csv
+/aita_clean.csv
