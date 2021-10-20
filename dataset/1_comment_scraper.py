@@ -39,7 +39,7 @@ def get_comments(id, after):
     after = str(after)
     args = f'?after={after}&link_id={id}' + \
            f'&sort=asc&sort_type=created_utc'
-    fields = ['created_utc', 'body', 'author']
+    fields = ['created_utc', 'body', 'author', 'score']
 
     return get_data('comment', args, fields)
 
@@ -53,35 +53,29 @@ def get_all_comments(id):
             break
 
         for comment in new_comments:
-            comment_data = {
-                'timestamp': comment['created_utc'],
-                'text': comment['body'],
-                'author': comment['author']
-            }
-            comments.append(comment_data)
+            comments.append(comment)
 
-        after = comments[-1]['timestamp']
+        after = comments[-1]['created_utc']
     
     return comments
     
 def scrape_comment(submission_data):
-    # data = [submission_id, timestamp, title, body, author, score, num_comments, yta_count, nta_count]
-    yta_count, nta_count = 0, 0
+    yta_score, nta_score = 0, 0
 
     if int(submission_data['num_comments']) > 0:
         comments = get_all_comments(submission_data['id'])
         for comment in comments:
             if comment['author'].lower() == 'automoderator':
                 continue
-            comment_text = comment['text'].translate(str.maketrans('', '', string.punctuation))
+            comment_text = comment['body'].translate(str.maketrans('', '', string.punctuation))
             words = comment_text.lower().split()
             if 'yta' in words or 'esh' in words:
-                yta_count += 1
+                yta_score += int(comment['score'])
             if 'nta' in words or 'nah' in words:
-                nta_count += 1
+                nta_score += int(comment['score'])
     
-    submission_data['yta_count'] = yta_count
-    submission_data['nta_count'] = nta_count
+    submission_data['yta_score'] = yta_score
+    submission_data['nta_score'] = nta_score
 
     return submission_data
 
@@ -89,7 +83,7 @@ def scrape_commments(subreddit, after, before):
     print(f'Scraping comments of r/{subreddit} from {after} to {before}')
 
     f_out = open(f'1_submission_data_{after}_{before}.csv', 'w',  newline='', encoding='utf-8') 
-    header = ['id', 'timestamp', 'title', 'body', 'author', 'score', 'num_comments', 'yta_count', 'nta_count']
+    header = ['id', 'timestamp', 'title', 'body', 'author', 'score', 'num_comments', 'yta_score', 'nta_score']
     writer = csv.DictWriter(f_out, quoting=csv.QUOTE_ALL, fieldnames=header)
     writer.writeheader()
 

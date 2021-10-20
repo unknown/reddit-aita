@@ -38,9 +38,9 @@ def scrape_submission(submission_data):
     author = submission_data.get('author')
     num_comments = submission_data.get('num_comments')
     score = submission_data.get('score')
-    yta_count, nta_count = 0, 0
+    yta_score, nta_score = 0, 0
 
-    data = [submission_id, timestamp, title, body, author, score, num_comments, yta_count, nta_count]
+    data = [submission_id, timestamp, title, body, author, score, num_comments, yta_score, nta_score]
 
     return data
 
@@ -49,7 +49,7 @@ def scrape_submissions(subreddit, after, before):
 
     f_out = open(f'0_submission_data_{after}_{before}.csv', 'w',  newline='', encoding='utf-8') 
     writer = csv.writer(f_out, quoting=csv.QUOTE_ALL)
-    header = ['id', 'timestamp', 'title', 'body', 'author', 'score', 'num_comments', 'yta_count', 'nta_count']
+    header = ['id', 'timestamp', 'title', 'body', 'author', 'score', 'num_comments', 'yta_score', 'nta_score']
     writer.writerow(header)
 
     scraped_submissions = list()
